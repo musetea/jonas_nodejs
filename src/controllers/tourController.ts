@@ -7,7 +7,12 @@ import HttpError from "../utils/HttpError";
  * getAllTours
  */
 export const getAllTours = catchAsync(
-	async (req: Request, res: Response, next: NextFunction) => {}
+	async (req: Request, res: Response, next: NextFunction) => {
+		res.status(200).json({
+			status: "success",
+			data: [],
+		});
+	}
 );
 
 /**
