@@ -19,6 +19,7 @@ export interface IUser {
 	passwordChangedAt?: Date;
 	passwordResetToken?: String;
 	passwordResetExpires?: Date;
+	active: boolean;
 }
 interface IUserDocument extends IUser, Document {
 	correctPassword: (
@@ -79,6 +80,11 @@ const userSchema: Schema<IUserDocument> = new Schema({
 	passwordResetExpires: {
 		type: Date,
 	},
+	active: {
+		type: Boolean,
+		default: true,
+		select: false, // 기본조회시 조회 안됨
+	},
 });
 
 // 2-1 미들웨어
@@ -106,6 +112,14 @@ userSchema.pre("save", function (next) {
 	}
 	this.passwordChangedAt = new Date(); // 현재시간
 	console.log(this.passwordChangedAt);
+	next();
+});
+
+/**
+ * active !== false
+ */
+userSchema.pre(/^find/, function (next) {
+	this.find({ active: { $ne: false } });
 	next();
 });
 

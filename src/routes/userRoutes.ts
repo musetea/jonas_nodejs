@@ -11,6 +11,7 @@ import {
 	getAllUser,
 	createUser,
 	updateMe,
+	deleteMe,
 } from "../controllers/userController";
 import { getUser, updateUser, deleteUser } from "../controllers/userController";
 
@@ -24,6 +25,7 @@ router.patch("/resetPassword/:token", resetPassword);
 //
 router.patch("/updatePassword", protect, updatePassword);
 router.patch("/updateMe", protect, updateMe);
+router.delete("/deleteMe", protect, deleteMe);
 //
 //
 router.route("/").get(getAllUser).post(createUser);

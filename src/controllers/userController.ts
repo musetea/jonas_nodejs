@@ -4,6 +4,11 @@ import { IRequest } from "../types/express";
 import User from "../models/user";
 import catchAsync from "../utils/catchAsync";
 
+const UpdateOption = {
+	new: true,
+	runValidators: true,
+};
+
 const filterUpdate = (target: any, ...allowFields: string[]) => {
 	let filter: any = {};
 	Object.keys(target).forEach(key => {
@@ -19,10 +24,12 @@ const filterUpdate = (target: any, ...allowFields: string[]) => {
 
 export const getAllUser = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
+		const users = await User.find();
+
 		res.status(200).json({
 			status: "success",
 			data: {
-				users: [],
+				users: users,
 			},
 		});
 	}
@@ -65,6 +72,28 @@ export const updateMe = catchAsync(
 			data: {
 				user: updateUser,
 			},
+		});
+	}
+);
+
+/**
+ * 삭제방법론
+ * 1) active 필드를 비활성화로 처리하므로 삭제처리로 여김
+ */
+export const deleteMe = catchAsync(
+	async (req: IRequest, res: Response, next: NextFunction) => {
+		const id = req.user!.id;
+		if (!id) {
+			return next(new HttpError("Not Login User", 403));
+		}
+		const updateUser = await User.findByIdAndUpdate(
+			id,
+			{ active: false },
+			UpdateOption
+		);
+		console.log(updateUser);
+		res.status(204).json({
+			status: "success",
 		});
 	}
 );
