@@ -26,3 +26,10 @@
     6) Server : if(valid JWT) -> Allow access
     7) Server : DATA ->
 ```
+
+### Email
+```sh
+    npm i nodemailer        # "^6.9.1",
+    npm i @types/nodemailer # "^6.4.7"
+
+```
