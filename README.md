@@ -77,3 +77,29 @@
 - keep user logged in with refersh tokens
 - tow-factor authentication
 - prevent parameter pollution causing uncaugth exception.
+
+#### 서버에서 쿠키전송
+
+```ts
+// 쿠키옵션
+const CookieOptions = {
+	expires: new Date(Date.now() + +JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+	secure: false, // HTTPS
+	httpOnly: true,
+};
+// jwt 토큰생성
+const signToken = (id: string) => {
+	return sign(
+		{
+			id: id,
+		},
+		JWT_SECRET,
+		{
+			expiresIn: JWT_EXPIRES_IN,
+		}
+	);
+};
+// 쿠키를 만들어서 전송(브라우저에서 자동관리 )
+const token = signToken(id);
+res.cookie("jwt", token, CookieOptions);
+```

@@ -13,6 +13,13 @@ import { SaveOptions } from "mongoose";
 const JWT_SECRET =
 	process.env.JWT_SECRET || "my-ultra-secure-and-ultra-long-secret";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "30d";
+const JWT_COOKIE_EXPIRES_IN = process.env.JWT_COOKIE_EXPIRES_IN || 30;
+
+const CookieOptions = {
+	expires: new Date(Date.now() + +JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+	secure: false, // HTTPS
+	httpOnly: true,
+};
 
 const signToken = (id: string) => {
 	return sign(
@@ -24,6 +31,26 @@ const signToken = (id: string) => {
 			expiresIn: JWT_EXPIRES_IN,
 		}
 	);
+};
+
+/**
+ * JWT 토큰 전송
+ * 로그인, 회원가입, 등등.
+ * @param id
+ * @param statusCode
+ * @param res
+ */
+const createSendToken = (id: string, statusCode: number, res: Response) => {
+	const token = signToken(id);
+
+	// 쿠키전송
+	if (process.env.NODE_ENV === "production") CookieOptions.secure = true;
+	res.cookie("jwt", token, CookieOptions);
+
+	res.status(statusCode).json({
+		status: "success",
+		token,
+	});
 };
 
 const saveOptions: SaveOptions = {
@@ -151,12 +178,7 @@ export const resetPassword = async (
 
 	await user.save({ validateBeforeSave: false });
 
-	const jsonToken = signToken(user._id.toString());
-
-	res.status(200).json({
-		status: "success",
-		token: jsonToken,
-	});
+	createSendToken(user._id.toString(), 200, res);
 };
 
 /**
@@ -175,15 +197,7 @@ export const signup = catchAsync(
 		});
 
 		// jwt
-		const token = signToken(newUser._id.toString());
-
-		res.status(201).json({
-			status: "success",
-			token,
-			data: {
-				user: newUser,
-			},
-		});
+		createSendToken(newUser._id.toString(), 201, res);
 	}
 );
 
@@ -215,16 +229,8 @@ export const signin = catchAsync(
 			next(new HttpError("Incorrect email or password!!", 401));
 			return;
 		}
-		const id = user._id.toString();
 
-		//  토큰 생성
-		let token = signToken(id);
-
-		//
-		res.status(200).json({
-			status: "success",
-			token,
-		});
+		createSendToken(user._id.toString(), 200, res);
 	}
 );
 
@@ -335,11 +341,5 @@ export const updatePassword = async (
 	});
 
 	// 4)
-	const token = signToken(user._id.toString());
-
-	//
-	res.status(200).json({
-		status: "success",
-		token,
-	});
+	createSendToken(user._id.toString(), 200, res);
 };

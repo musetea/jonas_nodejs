@@ -10,16 +10,17 @@ const DB =
 		"<PASSWORD>",
 		process.env.DATABASE_PASSWORD || ""
 	) || "";
-
+const LOCAL_DB_HOST = process.env.LOCAL_DB_HOST || "LOCAL_DB_HOST";
+const LOCAL_DB = process.env.LOCAL_DB || "jonas";
 // const options: ConnectOptions = {
 // 	useNewUrlParser: true,
 // 	useCreateIndex: true,
 // 	useFindAndModify: false,
 // };
-
-connect("mongodb://localhost:27017/jonas")
+const connectStr = `${LOCAL_DB_HOST}${LOCAL_DB}`;
+connect(connectStr)
 	.then(() => {
-		console.log("Mongoose DB Connection Successful!!");
+		console.log(`Mongoose DB Connection [${connectStr}] Successful!!`);
 	})
 	.catch(err => {
 		console.error(err);
