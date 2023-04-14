@@ -6,6 +6,7 @@ import HttpError from "./utils/HttpError";
 import userRouter from "./routes/userRoutes";
 import tourRouter from "./routes/tourRoutes";
 import { IUserModel } from "./models/user";
+import limiter from "./utils/lateLimiter";
 
 interface IRequest extends Request {
 	requestTime?: string;
@@ -18,6 +19,8 @@ const app = express();
 if (process.env.NODE_ENV === "development") {
 	app.use(morgan("dev"));
 }
+app.use("/api", limiter);
+
 // 파서설정
 app.use(express.json());
 const staticDir = path.resolve(__dirname, "../public");

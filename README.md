@@ -103,3 +103,10 @@ const signToken = (id: string) => {
 const token = signToken(id);
 res.cookie("jwt", token, CookieOptions);
 ```
+
+#### RATE LIMITER
+
+```sh
+    npm i express-rate-limit
+
+```
