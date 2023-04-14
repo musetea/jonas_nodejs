@@ -1,6 +1,11 @@
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import path from "path";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
+// import xss from "xss";
+// import xss from "xss-clean";
+import hpp from "hpp";
 import errorController from "./controllers/errorController";
 import HttpError from "./utils/HttpError";
 import userRouter from "./routes/userRoutes";
@@ -15,6 +20,9 @@ interface IRequest extends Request {
 
 const app = express();
 
+// 0)
+app.use(helmet());
+
 // 1) 미들웨어 (로깅)
 if (process.env.NODE_ENV === "development") {
 	app.use(morgan("dev"));
@@ -22,7 +30,17 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api", limiter);
 
 // 파서설정
-app.use(express.json());
+app.use(
+	express.json({
+		limit: "10kb",
+	})
+);
+// NoSQL Query Injection
+app.use(mongoSanitize());
+// XSS
+// app.use(xss());
+app.use(hpp());
+
 const staticDir = path.resolve(__dirname, "../public");
 app.use(express.static(staticDir));
 
