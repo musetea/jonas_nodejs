@@ -22,10 +22,11 @@ export interface ITour {
 	startLocation?: any;
 	locations?: any[];
 	guides?: string[];
+	reviews?: any[];
 }
 
 interface ITourDocument extends ITour {}
-interface ITourModel extends Model<ITourDocument> {}
+export interface ITourModel extends Model<ITourDocument> {}
 
 const tourSchma = new Schema<ITourDocument>(
 	{
@@ -162,6 +163,7 @@ tourSchma.virtual("durationWeeks").get(function () {
 
 /**
  * 여행에 대한 모든 리뷰들 만든다.
+ * 인터페이스에 reviews 항목을 추가해줘야 동작함.
  */
 tourSchma.virtual("reviews", {
 	ref: "Review",

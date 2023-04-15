@@ -4,6 +4,7 @@ import HttpError from "../utils/HttpError";
 import { IRequest } from "../types/express";
 //
 import Review from "../models/review";
+import { deleteOne, updateOne, getOne } from "./Factory";
 
 const returnError = (res: Response) => {
 	res.status(500).json({
@@ -14,9 +15,17 @@ const returnError = (res: Response) => {
 
 export const getAllReviews = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const reviews = await Review.find();
+		let filter = {};
+		const tour = req.params.tourId;
+		if (tour) {
+			filter = {
+				tour: tour,
+			};
+		}
+		const reviews = await Review.find(filter);
 		res.status(200).json({
 			status: "success",
+			results: reviews.length,
 			data: {
 				reviews,
 			},
@@ -24,10 +33,15 @@ export const getAllReviews = catchAsync(
 	}
 );
 
+/**
+ * /api/v1/tour/:tourId/reviews
+ */
 export const createReview = catchAsync(
 	async (req: IRequest, res: Response, next: NextFunction) => {
-		const { review, rating, tour } = req.body;
+		let tour = req.params.tourId;
 		const userId = req.user!.id;
+		const { review, rating } = req.body;
+		if (req.body.tour) tour = req.body.tour;
 
 		const inReview = {
 			review: review,
@@ -47,3 +61,6 @@ export const createReview = catchAsync(
 		});
 	}
 );
+export const getReview = getOne(Review);
+export const deleteReview = deleteOne(Review);
+export const updateReview = updateOne(Review);

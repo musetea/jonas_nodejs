@@ -22,31 +22,37 @@ interface IReviewDocument extends IReview, Document {}
 interface IReviewModel extends Model<IReviewDocument> {}
 
 //const userSchema: Schema<IUserDocument> = new Schema({
-const reivewSchema: Schema<IReviewDocument> = new Schema({
-	review: {
-		type: String,
-		required: [true, ""],
+const reivewSchema: Schema<IReviewDocument> = new Schema(
+	{
+		review: {
+			type: String,
+			required: [true, "작성하실 리뷰를 남겨주세요"],
+		},
+		rating: {
+			type: Number,
+			min: 1,
+			max: 5,
+		},
+		createAt: {
+			type: Date,
+			default: Date.now,
+		},
+		tour: {
+			type: SchemaTypes.ObjectId,
+			ref: "Tour",
+			required: [true, "리뷰에는 Tour 정보가 포함되어져야 합니다."],
+		},
+		user: {
+			type: SchemaTypes.ObjectId,
+			ref: "User",
+			required: [true, "리뷰에는 Userw 정보가 포함되어져야 합니다."],
+		},
 	},
-	rating: {
-		type: Number,
-		min: 1,
-		max: 5,
-	},
-	createAt: {
-		type: Date,
-		default: Date.now,
-	},
-	tour: {
-		type: SchemaTypes.ObjectId,
-		ref: "Tour",
-		required: [true, ""],
-	},
-	user: {
-		type: SchemaTypes.ObjectId,
-		ref: "User",
-		required: [true, ""],
-	},
-});
+	{
+		toJSON: { virtuals: true },
+		toObject: { virtuals: true },
+	}
+);
 
 // 미들웨어
 
@@ -61,7 +67,9 @@ reivewSchema.pre(/^find/, function (next) {
 		select: "name photo",
 	};
 
-	this.populate(tour).populate(user);
+	this
+		//.populate(tour)
+		.populate(user);
 
 	next();
 });

@@ -5,15 +5,19 @@ import HttpError from "../utils/HttpError";
 // 컨트롤러
 import { protect, restrictTo } from "./authController";
 import { createReview } from "../controllers/reviewController";
+import { deleteOne, updateOne } from "./Factory";
+import { Model } from "mongoose";
 
 /**
  * getAllTours
  */
 export const getAllTours = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
+		const tours = await Tour.find();
+
 		res.status(200).json({
 			status: "success",
-			data: [],
+			data: tours,
 		});
 	}
 );
@@ -43,7 +47,7 @@ export const getTour = catchAsync(
 			return next(new HttpError("Invalid Tour Id", 400));
 		}
 		//const tour = await Tour.findById(id).populate("guides");
-		const tour = await Tour.findById(id).populate("guides").populate("review");
+		const tour = await Tour.findById(id).populate("guides").populate("reviews");
 
 		if (!tour) {
 			next(new HttpError("Not tour found with that ID", 404));
@@ -59,27 +63,30 @@ export const getTour = catchAsync(
 	}
 );
 
-export const updateTour = catchAsync(
-	async (req: Request, res: Response, next: NextFunction) => {
-		const tour = {};
-		res.status(200).json({
-			status: "success",
-			data: {
-				tour: tour,
-			},
-		});
-	}
-);
+export const updateTour = updateOne(Tour);
 
-export const deleteTour = catchAsync(
-	async (req: Request, res: Response, next: NextFunction) => {
-		const tour = {};
-		res.status(204).json({
-			status: "success",
-			data: null,
-		});
-	}
-);
+/**
+ * 삭제
+ */
+// export const deleteTour = catchAsync(
+// 	async (req: Request, res: Response, next: NextFunction) => {
+// 		const id = req.params.id;
+// 		if (!id) {
+// 			return next(new HttpError("Invalid Parameter", 400));
+// 		}
+
+// 		const tour = Tour.findByIdAndDelete(id);
+// 		if (!tour) {
+// 			console.log(tour);
+// 			return next(new HttpError(`No tour found with tat id (${id})`, 400));
+// 		}
+// 		res.status(204).json({
+// 			status: "success",
+// 			data: null,
+// 		});
+// 	}
+// );
+export const deleteTour = deleteOne(Tour);
 
 export const getTourStats = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {

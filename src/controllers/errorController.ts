@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import HttpError from "../utils/HttpError";
+const isDev = process.env.NODE_ENV === "developement";
+const isProd = process.env.NODE_ENV === "production";
 
 // 몽구디비에러
 const handleCastDBError = (err: any) => {
@@ -66,12 +68,14 @@ export const errorController = (
 	res: Response,
 	next: NextFunction
 ) => {
-	console.log(err.stack);
+	// console.log(isDev, isProd);
+	// console.log(process.env);
+	//console.log(err.stack);
 	err.statusCode = err.statusCode || 500;
 
-	if (process.env.NODE_ENV === "development") {
-		sendDevError(err, res);
-	} else if (process.env.NODE_ENV === "production") {
+	if (isDev) {
+		return sendDevError(err, res);
+	} else if (isProd) {
 		let error = { ...err };
 		if (error.name === "CastError") error = handleCastDBError(error);
 		if (error.code === 11000) error = handleDuplicationFeildsError(error);

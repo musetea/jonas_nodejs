@@ -273,22 +273,22 @@ export const protect = catchAsync(
 		if (!token) {
 			return next(new HttpError("Your are not loggined in!", 401));
 		}
-		console.log(token);
+		//console.log(token);
 
 		//2, 만료토큰체크
 		const decode = (await tokenVerify(token)) as { id: string; iat: Date };
-		console.log(decode);
+		//console.log(decode);
 
 		//3. 토큰을...
 		const user = await User.findById(decode.id);
-		console.log(user);
+		//console.log(user);
 		if (!user) {
 			next(new HttpError("토큰 사용자가 존재하지 않습니다", 403));
 		}
 
 		// 비밀번호 변경전의 토큰일경우
 		const isCheck = user!.changedPasswordAfter(decode.iat);
-		console.log(isCheck);
+		//console.log(isCheck);
 		if (isCheck) {
 			return next(new HttpError("User Recentd passwrod!! ", 401));
 		}
@@ -299,7 +299,7 @@ export const protect = catchAsync(
 			role: user!.role || "",
 		};
 
-		console.log(req.user);
+		//console.log(req.user);
 		next();
 	}
 );

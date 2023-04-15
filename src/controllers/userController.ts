@@ -98,6 +98,15 @@ export const deleteMe = catchAsync(
 	}
 );
 
+export const getMe = async (
+	req: IRequest,
+	res: Response,
+	next: NextFunction
+) => {
+	req.params.id = req.user!.id;
+	next();
+};
+
 export const createUser = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
 		res.status(404).json({
@@ -109,9 +118,21 @@ export const createUser = catchAsync(
 
 export const getUser = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		res.status(404).json({
-			status: "fail",
-			message: "구현되지 않았습니다.",
+		const id = req.params.id;
+		if (!id) {
+			return next(new HttpError("Invalid Parameter", 400));
+		}
+
+		const doc = await User.findById(id);
+		if (!doc) {
+			return next(new HttpError("Not found User", 404));
+		}
+
+		res.status(200).json({
+			status: "success",
+			data: {
+				user: doc,
+			},
 		});
 	}
 );
