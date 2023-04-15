@@ -8,10 +8,13 @@ import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
 import errorController from "./controllers/errorController";
 import HttpError from "./utils/HttpError";
-import userRouter from "./routes/userRoutes";
-import tourRouter from "./routes/tourRoutes";
 import { IUserModel } from "./models/user";
 import limiter from "./utils/lateLimiter";
+
+//  라우트
+import userRouter from "./routes/userRoutes";
+import tourRouter from "./routes/tourRoutes";
+import reviewRouter from "./routes/reviewRoutes";
 
 interface IRequest extends Request {
 	requestTime?: string;
@@ -24,7 +27,8 @@ const app = express();
 app.use(helmet());
 
 // 1) 미들웨어 (로깅)
-if (process.env.NODE_ENV === "development") {
+// console.log(process.env);
+if (process.env.NODE_ENV === "developement") {
 	app.use(morgan("dev"));
 }
 app.use("/api", limiter);
@@ -53,6 +57,7 @@ app.use((req: IRequest, res: Response, next: NextFunction) => {
 // 라우츠
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/tour", tourRouter);
+app.use("/api/v1/review", reviewRouter);
 
 app.use("*", (req, res, next) => {
 	const err = new HttpError(

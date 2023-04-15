@@ -2,6 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
 import Tour from "../models/tour";
 import HttpError from "../utils/HttpError";
+// 컨트롤러
+import { protect, restrictTo } from "./authController";
+import { createReview } from "../controllers/reviewController";
 
 /**
  * getAllTours
@@ -20,12 +23,14 @@ export const getAllTours = catchAsync(
  */
 export const createTour = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const newTour = {};
+		const newTour = { ...req.body };
+		console.log("newTour", newTour);
+		const result = await Tour.create(newTour);
 
 		res.status(201).json({
 			status: "success",
 			data: {
-				tour: newTour,
+				tour: result,
 			},
 		});
 	}
@@ -33,7 +38,12 @@ export const createTour = catchAsync(
 
 export const getTour = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const tour = {};
+		const id = req.params.id;
+		if (!id) {
+			return next(new HttpError("Invalid Tour Id", 400));
+		}
+		//const tour = await Tour.findById(id).populate("guides");
+		const tour = await Tour.findById(id).populate("guides").populate("review");
 
 		if (!tour) {
 			next(new HttpError("Not tour found with that ID", 404));

@@ -139,13 +139,13 @@ userSchema.methods.correctPassword = async function (
  * @returns
  */
 userSchema.methods.changedPasswordAfter = function (jwtTimeStamp: number) {
-	const e: any = this;
+	console.log(this.passwordChangedAt);
 	if (this.passwordChangedAt) {
 		//console.log(e.passwordChangedAt.toString());
 		const changeTimestamp =
 			new Date(this.passwordChangedAt.toString()).getTime() / 1000;
 		//console.log(changeTimestamp);
-		//console.log(e.passwordChangeAt, jwtTimeStamp, changeTimestamp);
+		console.log(this.passwordChangeAt, jwtTimeStamp, changeTimestamp);
 		return jwtTimeStamp < changeTimestamp;
 	}
 	return false;

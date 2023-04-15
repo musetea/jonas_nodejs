@@ -57,7 +57,11 @@ const saveOptions: SaveOptions = {
 	validateBeforeSave: false, // validate disable
 };
 
-// 접근제한
+/**
+ * 접근제한(Role)
+ * @param roles
+ * @returns
+ */
 export const restrictTo = (...roles: string[]) => {
 	return async (req: IRequest, res: Response, next: NextFunction) => {
 		// roles => admin,lead-guide,
@@ -250,6 +254,10 @@ const tokenVerify = (token: string) => {
 		}
 	});
 };
+
+/**
+ * 로그인 서비스
+ */
 export const protect = catchAsync(
 	async (req: IRequest, res: Response, next: NextFunction) => {
 		//console.log(req);

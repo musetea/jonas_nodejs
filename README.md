@@ -140,3 +140,19 @@ TODO:타입스크립트에서 사용 방법 찾기
     npm i hpp
     npm i --save-dev @types/hpp
 ```
+
+### 모델링
+
+- 데이터모델링
+
+1. Different types of relationships between data
+
+- 1:1, 1:M, M:M
+
+2. referencing/normalizatin & embedding/denormalization
+3. embedding or referecing other document
+4. types of referencing
+
+#### 몽구스
+
+- `Population` 는 문서의 경로를 다른 컬렉션의 실제 문서로 자동으로 바꾸는 방법
