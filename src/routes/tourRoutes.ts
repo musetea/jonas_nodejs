@@ -1,6 +1,10 @@
 import { Router } from "express";
 //
-import { getAllTours, createTour } from "../controllers/tourController";
+import {
+	getAllTours,
+	createTour,
+	getTourStats,
+} from "../controllers/tourController";
 import { deleteTour, getTour, updateTour } from "../controllers/tourController";
 import { protect, restrictTo } from "../controllers/authController";
 import { createReview } from "../controllers/reviewController";
@@ -11,8 +15,10 @@ const router = Router();
 /**
  * tour 라우터에서 reivew 라우터 연동
  */
-router.use("/:tourId/review", reviewRoutes);
+router.use("/:tourId/reviews", reviewRoutes);
 // reivew router
+
+router.get("/stats", getTourStats);
 
 router
 	.route("/")

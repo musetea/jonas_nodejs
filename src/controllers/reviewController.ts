@@ -64,3 +64,9 @@ export const createReview = catchAsync(
 export const getReview = getOne(Review);
 export const deleteReview = deleteOne(Review);
 export const updateReview = updateOne(Review);
+
+export const getReviewStatics = catchAsync(
+	async (req: Request, res: Response, next: NextFunction) => {
+		returnError(res);
+	}
+);

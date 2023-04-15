@@ -2,7 +2,15 @@
  * Tour & User 없이 리뷰를 작성할수 없다.
  */
 
-import { Schema, Model, SchemaTypes, model, PopulateOptions } from "mongoose";
+import {
+	Schema,
+	Model,
+	SchemaTypes,
+	model,
+	PopulateOptions,
+	SchemaType,
+} from "mongoose";
+import Tour from "./tour";
 
 interface IReview {
 	review: string;
@@ -19,7 +27,9 @@ interface IReview {
 }
 
 interface IReviewDocument extends IReview, Document {}
-interface IReviewModel extends Model<IReviewDocument> {}
+interface IReviewModel extends Model<IReviewDocument> {
+	calcAverageRatings: (tour: any) => any;
+}
 
 //const userSchema: Schema<IUserDocument> = new Schema({
 const reivewSchema: Schema<IReviewDocument> = new Schema(
@@ -73,6 +83,41 @@ reivewSchema.pre(/^find/, function (next) {
 
 	next();
 });
+
+reivewSchema.post("save", function () {
+	console.log("post save", this.tour);
+	Review.calcAverageRatings(this.tour);
+});
+
+/**
+ *
+ * @param tourId
+ * @returns
+ */
+reivewSchema.statics.calcAverageRatings = async function (tourId) {
+	//console.log("calcAverageRatings", tourId);
+
+	const stats = await this.aggregate([
+		{
+			$match: {
+				tour: tourId,
+			},
+		},
+		{
+			$group: {
+				_id: "$tour",
+				nRating: { $sum: 1 },
+				avgRating: { $avg: "$rating" },
+			},
+		},
+	]);
+	// console.log(stats);
+	//return stats;
+	await Tour.findByIdAndUpdate(tourId, {
+		ratingsAverage: stats[0].avgRating,
+		ratingsQuantity: stats[0].nRating,
+	});
+};
 
 // 3. Create a Model.
 const Review = model<IReviewDocument, IReviewModel>("Review", reivewSchema);

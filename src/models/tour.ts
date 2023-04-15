@@ -146,13 +146,25 @@ const tourSchma = new Schema<ITourDocument>(
 );
 
 /**
+ * 인덱스
+ */
+tourSchma.index({
+	price: 1,
+	ratingsAverage: -1,
+});
+tourSchma.index({
+	slug: 1,
+});
+
+/**
  * 미들웨어
  */
-// tourSchma.pre("save", async function (next) {
-// 	const guidesPromise = this.guides?.map(async id => await User.findById(id));
-// 	this.guides = await Promise.all(guidesPromise);
-// 	next();
-// });
+tourSchma.pre("save", async function (next) {
+	const guidesPromise = this.guides?.map(async id => await User.findById(id));
+	console.log(guidesPromise);
+	//this.guides = await Promise.all();
+	next();
+});
 
 /**
  * 여행일수를 주단위로

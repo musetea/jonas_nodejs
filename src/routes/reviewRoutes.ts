@@ -6,6 +6,7 @@ import {
 	deleteReview,
 	updateReview,
 	getReview,
+	getReviewStatics,
 } from "../controllers/reviewController";
 
 /*
@@ -16,6 +17,8 @@ import {
 const router = Router({
 	mergeParams: true,
 });
+
+router.get("/statics", getReviewStatics);
 
 router
 	.route("/")
